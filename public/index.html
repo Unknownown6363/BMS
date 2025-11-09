@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>⚡ EV Battery Monitor Pro</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Animated Background -->
+    <div class="background-animation">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-3"></div>
+    </div>
+
+    <div class="container">
+      <!-- Glassmorphism Header -->
+      <header class="header-glass">
+        <div class="header-content">
+          <div class="logo-section">
+            <div class="logo-icon">⚡</div>
+            <div>
+              <h1 class="main-title">EV Battery Monitor</h1>
+              <p class="subtitle">Professional IoT Management System</p>
+            </div>
+          </div>
+          <div class="live-indicator">
+            <span class="pulse-dot"></span>
+            <span class="live-text">LIVE</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Hero Section with Battery -->
+      <section class="hero-section">
+        <div class="battery-display">
+          <div class="battery-outer">
+            <div class="battery-inner">
+              <div class="battery-liquid" id="batteryLiquid">
+                <div class="wave"></div>
+                <div class="wave wave-2"></div>
+              </div>
+              <div class="battery-percentage" id="batteryPercentage">--</div>
+            </div>
+            <div class="battery-terminal"></div>
+          </div>
+          <div class="charge-status" id="chargeStatus">
+            <div class="status-icon" id="statusIcon">🔌</div>
+            <div class="status-details">
+              <div class="status-label">Status</div>
+              <div class="status-value" id="statusText">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Warning Alert Banner -->
+      <div class="alert-banner" id="alertBanner">
+        <div class="alert-content" id="alertContent"></div>
+      </div>
+
+      <!-- Stats Dashboard -->
+      <section class="stats-dashboard">
+        <div class="stat-card primary">
+          <div class="stat-header">
+            <span class="stat-icon">⚡</span>
+            <span class="stat-label">Voltage</span>
+          </div>
+          <div class="stat-value" id="voltage">--</div>
+          <div class="stat-unit">Volts</div>
+          <div class="stat-bar">
+            <div class="stat-bar-fill" id="voltageBar"></div>
+          </div>
+        </div>
+
+        <div class="stat-card secondary">
+          <div class="stat-header">
+            <span class="stat-icon">🔋</span>
+            <span class="stat-label">Current</span>
+          </div>
+          <div class="stat-value" id="current">--</div>
+          <div class="stat-unit">mA</div>
+          <div class="stat-bar">
+            <div class="stat-bar-fill" id="currentBar"></div>
+          </div>
+        </div>
+
+        <div class="stat-card accent">
+          <div class="stat-header">
+            <span class="stat-icon">🌡️</span>
+            <span class="stat-label">Temperature</span>
+          </div>
+          <div class="stat-value" id="temperature">--</div>
+          <div class="stat-unit">°C</div>
+          <div class="stat-bar">
+            <div class="stat-bar-fill" id="tempBar"></div>
+          </div>
+        </div>
+
+        <div class="stat-card success">
+          <div class="stat-header">
+            <span class="stat-icon">📊</span>
+            <span class="stat-label">State of Charge</span>
+          </div>
+          <div class="stat-value" id="soc">--</div>
+          <div class="stat-unit">%</div>
+          <div class="stat-bar">
+            <div class="stat-bar-fill" id="socBar"></div>
+          </div>
+        </div>
+
+        <div class="stat-card info">
+          <div class="stat-header">
+            <span class="stat-icon">💚</span>
+            <span class="stat-label">State of Health</span>
+          </div>
+          <div class="stat-value" id="soh">--</div>
+          <div class="stat-unit">%</div>
+          <div class="stat-bar">
+            <div class="stat-bar-fill" id="sohBar"></div>
+          </div>
+        </div>
+
+        <div class="stat-card warning">
+          <div class="stat-header">
+            <span class="stat-icon">🛣️</span>
+            <span class="stat-label">Est. Range</span>
+          </div>
+          <div class="stat-value" id="range">--</div>
+          <div class="stat-unit">km</div>
+          <div class="stat-bar">
+            <div class="stat-bar-fill" id="rangeBar"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- System Warnings -->
+      <section class="warnings-section" id="warningsSection">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="title-icon">⚠️</span>
+            System Alerts
+          </h2>
+        </div>
+        <div class="warnings-grid" id="warningsList"></div>
+      </section>
+
+      <!-- Motor Control Panel -->
+      <section class="control-panel">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="title-icon">🎮</span>
+            Motor Control
+          </h2>
+        </div>
+        <div class="control-grid">
+          <button class="control-button motor-on" id="motorOnBtn">
+            <div class="button-glow"></div>
+            <span class="button-icon">🟢</span>
+            <span class="button-label">MOTOR ON</span>
+            <span class="button-subtitle">Start Engine</span>
+          </button>
+          <button class="control-button motor-off" id="motorOffBtn">
+            <div class="button-glow"></div>
+            <span class="button-icon">🔴</span>
+            <span class="button-label">MOTOR OFF</span>
+            <span class="button-subtitle">Stop Engine</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Footer Info -->
+      <footer class="footer-info">
+        <div class="footer-item">
+          <span class="footer-icon">🕐</span>
+          <span class="footer-label">Last Update:</span>
+          <span class="footer-value" id="lastUpdate">Never</span>
+        </div>
+        <div class="footer-item">
+          <span class="footer-icon">🔄</span>
+          <span class="footer-label">Auto Refresh:</span>
+          <span class="footer-value">Every 15s</span>
+        </div>
+        <div class="footer-item">
+          <span class="footer-icon">📡</span>
+          <span class="footer-label">Connection:</span>
+          <span class="footer-value connection-status" id="connectionStatus">
+            <span class="status-dot"></span>
+            Active
+          </span>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
