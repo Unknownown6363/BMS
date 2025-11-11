@@ -54,10 +54,12 @@ app.get("/api/data", async (req, res) => {
       const batteryData = {
         voltage: parseFloat(latestData.field1) || 0,
         current: parseFloat(latestData.field2) || 0,
-        temperature: parseFloat(latestData.field3) || 0,
-        chargingStatus: parseInt(latestData.field4) || 0,
+        power: parseFloat(latestData.field3) || 0,
+        temperature: parseFloat(latestData.field4) || 0,
         soc: parseFloat(latestData.field5) || 0,
         soh: parseFloat(latestData.field6) || 0,
+        motorState: parseInt(latestData.field7) || 0,
+        chargingState: parseInt(latestData.field8) || 0,
         timestamp: latestData.created_at,
       };
 

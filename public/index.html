@@ -22,7 +22,7 @@
             <div class="logo-icon">⚡</div>
             <div>
               <h1 class="main-title">EV Battery Monitor</h1>
-              <p class="subtitle">Real-Time Battery Monitoring System</p>
+              <p class="subtitle">Real-Time Monitoring System</p>
             </div>
           </div>
           <div class="live-indicator">
@@ -88,6 +88,18 @@
 
         <div class="stat-card accent">
           <div class="stat-header">
+            <span class="stat-icon">⚡</span>
+            <span class="stat-label">Power</span>
+          </div>
+          <div class="stat-value" id="power">--</div>
+          <div class="stat-unit">W</div>
+          <div class="stat-bar">
+            <div class="stat-bar-fill" id="powerBar"></div>
+          </div>
+        </div>
+
+        <div class="stat-card warning">
+          <div class="stat-header">
             <span class="stat-icon">🌡️</span>
             <span class="stat-label">Temperature</span>
           </div>
@@ -122,7 +134,7 @@
           </div>
         </div>
 
-        <div class="stat-card warning">
+        <div class="stat-card primary">
           <div class="stat-header">
             <span class="stat-icon">🛣️</span>
             <span class="stat-label">Est. Range</span>
@@ -159,13 +171,13 @@
             <div class="button-glow"></div>
             <span class="button-icon">🟢</span>
             <span class="button-label">MOTOR ON</span>
-            <span class="button-subtitle">Start Motor</span>
+            <span class="button-subtitle">Start Engine</span>
           </button>
           <button class="control-button motor-off" id="motorOffBtn">
             <div class="button-glow"></div>
             <span class="button-icon">🔴</span>
             <span class="button-label">MOTOR OFF</span>
-            <span class="button-subtitle">Stop Motor</span>
+            <span class="button-subtitle">Stop Engine</span>
           </button>
         </div>
       </section>
