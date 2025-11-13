@@ -22,7 +22,7 @@
             <div class="logo-icon">⚡</div>
             <div>
               <h1 class="main-title">EV Battery Monitor</h1>
-              <p class="subtitle">Real-Time Monitoring System</p>
+              <p class="subtitle">Professional IoT Management System</p>
             </div>
           </div>
           <div class="live-indicator">
@@ -158,27 +158,56 @@
         <div class="warnings-grid" id="warningsList"></div>
       </section>
 
-      <!-- Motor Control Panel -->
+      <!-- Charging Control Panel -->
       <section class="control-panel">
         <div class="section-header">
           <h2 class="section-title">
-            <span class="title-icon">🎮</span>
-            Motor Control
+            <span class="title-icon">🔌</span>
+            Charging Control
           </h2>
         </div>
         <div class="control-grid">
-          <button class="control-button motor-on" id="motorOnBtn">
+          <button class="control-button charging-on" id="chargingOnBtn">
             <div class="button-glow"></div>
-            <span class="button-icon">🟢</span>
-            <span class="button-label">MOTOR ON</span>
-            <span class="button-subtitle">Start Engine</span>
+            <span class="button-icon">🔋</span>
+            <span class="button-label">CHARGING ON</span>
+            <span class="button-subtitle">Start Charging</span>
           </button>
-          <button class="control-button motor-off" id="motorOffBtn">
+          <button class="control-button charging-off" id="chargingOffBtn">
             <div class="button-glow"></div>
-            <span class="button-icon">🔴</span>
-            <span class="button-label">MOTOR OFF</span>
-            <span class="button-subtitle">Stop Engine</span>
+            <span class="button-icon">⏸️</span>
+            <span class="button-label">CHARGING OFF</span>
+            <span class="button-subtitle">Stop Charging</span>
           </button>
+        </div>
+      </section>
+
+      <!-- Historical Data Table -->
+      <section class="history-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="title-icon">📊</span>
+            Historical Data - Last 10 Records
+          </h2>
+        </div>
+        <div class="table-container">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Timestamp</th>
+                <th>SOC (%)</th>
+                <th>SOH (%)</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <tr>
+                <td colspan="4" class="loading-cell">
+                  Loading historical data...
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 

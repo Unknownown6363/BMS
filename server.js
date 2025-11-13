@@ -50,6 +50,19 @@ app.get("/api/data", async (req, res) => {
     ) {
       const latestData = response.data.feeds[0];
 
+      // Log the received data from ThingSpeak
+      console.log("📡 Data received from ThingSpeak:", {
+        timestamp: latestData.created_at,
+        field1_voltage: latestData.field1,
+        field2_current: latestData.field2,
+        field3_power: latestData.field3,
+        field4_temperature: latestData.field4,
+        field5_soc: latestData.field5,
+        field6_soh: latestData.field6,
+        field7_motorState: latestData.field7,
+        field8_chargingState: latestData.field8,
+      });
+
       // Parse the data from ThingSpeak fields
       const batteryData = {
         voltage: parseFloat(latestData.field1) || 0,
@@ -63,9 +76,44 @@ app.get("/api/data", async (req, res) => {
         timestamp: latestData.created_at,
       };
 
-      // Calculate estimated range (simple placeholder formula)
-      // Range = SOC * 100 (can be modified later)
-      batteryData.estimatedRange = ((batteryData.soc * 100) / 100).toFixed(1);
+      // Advanced range calculation for 3.7V Li-ion battery
+      const BATTERY_CONFIG = {
+        capacity: 0.5, // Battery capacity in kWh (0.5 kWh = 500Wh for small Li-ion)
+        efficiency: 25, // km per kWh (Li-ion e-bikes/scooters typically 20-30 km/kWh)
+        minTemp: 0, // Li-ion works down to 0°C
+        maxTemp: 45, // Li-ion max recommended temp 45°C
+      };
+
+      // Base range calculation
+      let baseRange =
+        (batteryData.soc / 100) *
+        BATTERY_CONFIG.capacity *
+        BATTERY_CONFIG.efficiency;
+
+      // Temperature correction
+      let tempFactor = 1.0;
+      if (batteryData.temperature < BATTERY_CONFIG.minTemp) {
+        tempFactor = 0.8; // 20% reduction in cold
+      } else if (batteryData.temperature > BATTERY_CONFIG.maxTemp) {
+        tempFactor = 0.9; // 10% reduction in heat
+      }
+
+      // Apply corrections
+      batteryData.estimatedRange = (baseRange * tempFactor).toFixed(1);
+
+      // Determine charging status from chargingState field
+      batteryData.chargingStatus = batteryData.chargingState;
+
+      console.log("✅ Processed battery data:", {
+        voltage: batteryData.voltage,
+        current: batteryData.current,
+        power: batteryData.power,
+        temperature: batteryData.temperature,
+        soc: batteryData.soc,
+        soh: batteryData.soh,
+        estimatedRange: batteryData.estimatedRange,
+        chargingStatus: batteryData.chargingStatus,
+      });
 
       res.json({
         success: true,
@@ -88,11 +136,65 @@ app.get("/api/data", async (req, res) => {
 });
 
 /**
- * POST /api/mode
- * Sends motor mode (ON/OFF) to ThingSpeak
+ * GET /api/history
+ * Fetches the last 10 entries for SOC and SOH from ThingSpeak
+ */
+app.get("/api/history", async (req, res) => {
+  try {
+    const url = `https://api.thingspeak.com/channels/${THINGSPEAK_CHANNEL_ID}/feeds.json`;
+    const params = {
+      api_key: THINGSPEAK_READ_API_KEY,
+      results: 10, // Get last 10 entries
+    };
+
+    const response = await axios.get(url, { params });
+
+    if (
+      response.data &&
+      response.data.feeds &&
+      response.data.feeds.length > 0
+    ) {
+      const historyData = response.data.feeds.map((entry) => ({
+        timestamp: entry.created_at,
+        soc: parseFloat(entry.field5) || 0,
+        soh: parseFloat(entry.field6) || 0,
+      }));
+
+      console.log(
+        "📊 Historical data retrieved:",
+        historyData.length,
+        "entries"
+      );
+
+      res.json({
+        success: true,
+        data: historyData,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "No historical data available from ThingSpeak",
+      });
+    }
+  } catch (error) {
+    console.error(
+      "Error fetching historical data from ThingSpeak:",
+      error.message
+    );
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch historical data from ThingSpeak",
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * POST /api/charging
+ * Sends charging mode (ON/OFF) to ThingSpeak
  * Body: { mode: 0 (ON) or 1 (OFF) }
  */
-app.post("/api/mode", async (req, res) => {
+app.post("/api/charging", async (req, res) => {
   try {
     const { mode } = req.body;
 
@@ -100,15 +202,15 @@ app.post("/api/mode", async (req, res) => {
     if (mode !== 0 && mode !== 1) {
       return res.status(400).json({
         success: false,
-        message: "Invalid mode. Use 0 for Motor ON or 1 for Motor OFF",
+        message: "Invalid mode. Use 0 for Charging ON or 1 for Charging OFF",
       });
     }
 
-    // Send data to ThingSpeak using field7 for motor mode
+    // Send data to ThingSpeak using field8 for charging mode
     const url = `https://api.thingspeak.com/update.json`;
     const params = {
       api_key: THINGSPEAK_WRITE_API_KEY,
-      field7: mode,
+      field8: mode,
     };
 
     const response = await axios.post(url, null, { params });
@@ -116,7 +218,7 @@ app.post("/api/mode", async (req, res) => {
     if (response.data && response.data !== 0) {
       res.json({
         success: true,
-        message: `Motor ${mode === 0 ? "ON" : "OFF"} mode sent successfully`,
+        message: `Charging ${mode === 0 ? "ON" : "OFF"} mode sent successfully`,
         entryId: response.data,
       });
     } else {
@@ -126,10 +228,10 @@ app.post("/api/mode", async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("Error sending mode to ThingSpeak:", error.message);
+    console.error("Error sending charging mode to ThingSpeak:", error.message);
     res.status(500).json({
       success: false,
-      message: "Failed to send mode to ThingSpeak",
+      message: "Failed to send charging mode to ThingSpeak",
       error: error.message,
     });
   }
