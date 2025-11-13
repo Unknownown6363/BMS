@@ -26,7 +26,7 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: #050814;
   color: #ffffff;
   min-height: 100vh;
@@ -82,9 +82,16 @@ body {
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(100px, -100px) scale(1.1); }
-  66% { transform: translate(-100px, 100px) scale(0.9); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(100px, -100px) scale(1.1);
+  }
+  66% {
+    transform: translate(-100px, 100px) scale(0.9);
+  }
 }
 
 /* Container */
@@ -140,8 +147,13 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .main-title {
@@ -179,8 +191,15 @@ body {
 }
 
 @keyframes pulseDot {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: 0.7; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.7;
+  }
 }
 
 .live-text {
@@ -199,8 +218,12 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .battery-display {
@@ -229,7 +252,8 @@ body {
   position: relative;
   background: rgba(0, 0, 0, 0.4);
   overflow: hidden;
-  box-shadow: inset 0 0 30px rgba(0, 245, 255, 0.2), 0 0 50px rgba(0, 245, 255, 0.3);
+  box-shadow: inset 0 0 30px rgba(0, 245, 255, 0.2),
+    0 0 50px rgba(0, 245, 255, 0.3);
 }
 
 .battery-liquid {
@@ -249,7 +273,11 @@ body {
   left: -50%;
   width: 200%;
   height: 100px;
-  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.3) 0%,
+    transparent 70%
+  );
   animation: wave 3s infinite linear;
 }
 
@@ -259,8 +287,12 @@ body {
 }
 
 @keyframes wave {
-  0% { transform: translateX(0) translateY(0); }
-  100% { transform: translateX(50%) translateY(10px); }
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  100% {
+    transform: translateX(50%) translateY(10px);
+  }
 }
 
 .battery-percentage {
@@ -299,8 +331,13 @@ body {
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .status-details {
@@ -341,7 +378,11 @@ body {
 }
 
 .alert-content {
-  background: linear-gradient(135deg, rgba(255, 71, 87, 0.2), rgba(255, 0, 110, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(255, 71, 87, 0.2),
+    rgba(255, 0, 110, 0.2)
+  );
   backdrop-filter: blur(20px);
   border: 2px solid #ff4757;
   border-radius: 20px;
@@ -394,7 +435,7 @@ body {
 }
 
 .stat-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -491,9 +532,16 @@ body {
 }
 
 @keyframes wiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-15deg); }
-  75% { transform: rotate(15deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-15deg);
+  }
+  75% {
+    transform: rotate(15deg);
+  }
 }
 
 .warnings-grid {
@@ -531,19 +579,31 @@ body {
 
 .warning-item.critical {
   border-left-color: #ff4757;
-  background: linear-gradient(90deg, rgba(255, 71, 87, 0.15), rgba(255, 255, 255, 0.05));
+  background: linear-gradient(
+    90deg,
+    rgba(255, 71, 87, 0.15),
+    rgba(255, 255, 255, 0.05)
+  );
   box-shadow: 0 0 30px rgba(255, 71, 87, 0.2);
 }
 
 .warning-item.warning {
   border-left-color: #ffb800;
-  background: linear-gradient(90deg, rgba(255, 184, 0, 0.15), rgba(255, 255, 255, 0.05));
+  background: linear-gradient(
+    90deg,
+    rgba(255, 184, 0, 0.15),
+    rgba(255, 255, 255, 0.05)
+  );
   box-shadow: 0 0 30px rgba(255, 184, 0, 0.2);
 }
 
 .warning-item.info {
   border-left-color: #00ff88;
-  background: linear-gradient(90deg, rgba(0, 255, 136, 0.15), rgba(255, 255, 255, 0.05));
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 136, 0.15),
+    rgba(255, 255, 255, 0.05)
+  );
   box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
 }
 
@@ -557,9 +617,16 @@ body {
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  75% { transform: translateX(8px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-8px);
+  }
+  75% {
+    transform: translateX(8px);
+  }
 }
 
 .warning-item-text {
@@ -721,7 +788,11 @@ body {
 }
 
 .history-table thead {
-  background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(123, 47, 247, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(0, 245, 255, 0.1),
+    rgba(123, 47, 247, 0.1)
+  );
   border-bottom: 2px solid rgba(0, 245, 255, 0.3);
 }
 
@@ -789,8 +860,13 @@ body {
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .loading-cell,
@@ -920,7 +996,7 @@ body {
     flex-direction: column;
     padding: 40px 60px;
   }
-  
+
   .control-grid {
     grid-template-columns: 1fr;
   }
@@ -930,45 +1006,45 @@ body {
   .container {
     padding: 20px 15px;
   }
-  
+
   .header-content {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .logo-section {
     flex-direction: column;
   }
-  
+
   .main-title {
     font-size: 1.5rem;
   }
-  
+
   .battery-inner {
     width: 280px;
     height: 140px;
   }
-  
+
   .battery-percentage {
     font-size: 2rem;
   }
-  
+
   .status-icon {
     font-size: 3rem;
   }
-  
+
   .stats-dashboard {
     grid-template-columns: 1fr;
   }
-  
+
   .stat-value {
     font-size: 2.5rem;
   }
-  
+
   .footer-info {
     flex-direction: column;
   }
-  
+
   .toast-container {
     right: 15px;
     left: 15px;
@@ -980,20 +1056,20 @@ body {
   .battery-display {
     padding: 30px 20px;
   }
-  
+
   .battery-inner {
     width: 220px;
     height: 110px;
   }
-  
+
   .battery-percentage {
     font-size: 1.5rem;
   }
-  
+
   .button-label {
     font-size: 1.2rem;
   }
-  
+
   .control-button {
     padding: 30px 20px;
   }
