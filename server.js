@@ -189,54 +189,6 @@ app.get("/api/history", async (req, res) => {
   }
 });
 
-/**
- * POST /api/charging
- * Sends charging mode (ON/OFF) to ThingSpeak
- * Body: { mode: 0 (ON) or 1 (OFF) }
- */
-app.post("/api/charging", async (req, res) => {
-  try {
-    const { mode } = req.body;
-
-    // Validate mode value
-    if (mode !== 0 && mode !== 1) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid mode. Use 0 for Charging ON or 1 for Charging OFF",
-      });
-    }
-
-    // Send data to ThingSpeak using field8 for charging mode
-    const url = `https://api.thingspeak.com/update.json`;
-    const params = {
-      api_key: THINGSPEAK_WRITE_API_KEY,
-      field8: mode,
-    };
-
-    const response = await axios.post(url, null, { params });
-
-    if (response.data && response.data !== 0) {
-      res.json({
-        success: true,
-        message: `Charging ${mode === 0 ? "ON" : "OFF"} mode sent successfully`,
-        entryId: response.data,
-      });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: "Failed to update ThingSpeak. Check your WRITE API key.",
-      });
-    }
-  } catch (error) {
-    console.error("Error sending charging mode to ThingSpeak:", error.message);
-    res.status(500).json({
-      success: false,
-      message: "Failed to send charging mode to ThingSpeak",
-      error: error.message,
-    });
-  }
-});
-
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({

@@ -12,15 +12,12 @@ const socEl = document.getElementById("soc");
 const sohEl = document.getElementById("soh");
 const rangeEl = document.getElementById("range");
 const lastUpdateEl = document.getElementById("lastUpdate");
-const motorOnBtn = document.getElementById("motorOnBtn");
-const motorOffBtn = document.getElementById("motorOffBtn");
-const chargingOnBtn = document.getElementById("chargingOnBtn");
-const chargingOffBtn = document.getElementById("chargingOffBtn");
 const toastContainer = document.getElementById("toastContainer");
 const alertBanner = document.getElementById("alertBanner");
 const alertContent = document.getElementById("alertContent");
 const warningsList = document.getElementById("warningsList");
 const connectionStatus = document.getElementById("connectionStatus");
+const historyTableBody = document.getElementById("historyTableBody");
 
 // Progress bars
 const voltageBar = document.getElementById("voltageBar");
@@ -35,26 +32,26 @@ const rangeBar = document.getElementById("rangeBar");
 const REFRESH_INTERVAL = 15000;
 let refreshTimer = null;
 
-// Warning thresholds (easily customizable)
+// Warning thresholds for 3.7V Li-ion battery (easily customizable)
 const THRESHOLDS = {
   temperature: {
-    critical: 50, // °C
-    warning: 45,
-    low: 0,
+    critical: 50, // °C - Li-ion danger zone
+    warning: 45, // °C
+    low: 0, // °C - Li-ion performs poorly below 0°C
   },
   voltage: {
-    critical_low: 10, // V
-    warning_low: 15,
-    critical_high: 60,
-    warning_high: 55,
+    critical_low: 3.0, // V - Below this damages Li-ion
+    warning_low: 3.3, // V - Low voltage warning
+    critical_high: 4.3, // V - Overcharge danger
+    warning_high: 4.2, // V - Fully charged
   },
   soc: {
     critical: 10, // %
-    warning: 20,
+    warning: 20, // %
   },
   soh: {
     critical: 60, // %
-    warning: 75,
+    warning: 75, // %
   },
   current: {
     warning_high: 100, // mA
@@ -66,20 +63,51 @@ const THRESHOLDS = {
  */
 async function fetchBatteryData() {
   try {
+    console.log("🔄 Fetching battery data from ThingSpeak...");
     const response = await fetch("/api/data");
     const result = await response.json();
 
     if (result.success && result.data) {
+      console.log("✅ Battery data received:", result.data);
       updateUI(result.data);
       updateConnectionStatus(true);
     } else {
+      console.warn("⚠️ No data available from ThingSpeak");
       showToast("⚠️ No data available from ThingSpeak", "warning");
       updateConnectionStatus(false);
     }
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error("❌ Error fetching data:", error);
     showToast("❌ Failed to fetch battery data", "error");
     updateConnectionStatus(false);
+  }
+}
+
+/**
+ * Fetch historical data from the API
+ */
+async function fetchHistoricalData() {
+  try {
+    console.log("📊 Fetching historical data from ThingSpeak...");
+    const response = await fetch("/api/history");
+    const result = await response.json();
+
+    if (result.success && result.data) {
+      console.log(
+        "✅ Historical data received:",
+        result.data.length,
+        "entries"
+      );
+      updateHistoryTable(result.data);
+    } else {
+      console.warn("⚠️ No historical data available");
+      historyTableBody.innerHTML =
+        '<tr><td colspan="4" class="no-data-cell">No historical data available</td></tr>';
+    }
+  } catch (error) {
+    console.error("❌ Error fetching historical data:", error);
+    historyTableBody.innerHTML =
+      '<tr><td colspan="4" class="error-cell">Failed to load historical data</td></tr>';
   }
 }
 
@@ -87,17 +115,21 @@ async function fetchBatteryData() {
  * Update UI with battery data
  */
 function updateUI(data) {
-  // Update voltage
+  // Update voltage (3.7V Li-ion range: 2.5V - 4.2V)
   voltageEl.textContent = data.voltage.toFixed(2);
-  updateProgressBar(voltageBar, data.voltage, 0, 60);
+  updateProgressBar(voltageBar, data.voltage, 2.5, 4.2);
 
   // Update current (in mA)
   currentEl.textContent = data.current.toFixed(2);
   updateProgressBar(currentBar, Math.abs(data.current), 0, 150);
 
-  // Update temperature
+  // Update power (in Watts)
+  powerEl.textContent = data.power.toFixed(2);
+  updateProgressBar(powerBar, Math.abs(data.power), 0, 50);
+
+  // Update temperature (Li-ion range: 0°C - 50°C)
   temperatureEl.textContent = data.temperature.toFixed(1);
-  updateProgressBar(tempBar, data.temperature, 0, 60);
+  updateProgressBar(tempBar, data.temperature, 0, 50);
 
   // Update SOC
   socEl.textContent = data.soc.toFixed(1);
@@ -109,7 +141,7 @@ function updateUI(data) {
 
   // Update estimated range
   rangeEl.textContent = data.estimatedRange;
-  updateProgressBar(rangeBar, parseFloat(data.estimatedRange), 0, 100);
+  updateProgressBar(rangeBar, parseFloat(data.estimatedRange), 0, 20);
 
   // Update battery visual
   updateBatteryVisual(data.soc);
@@ -219,6 +251,59 @@ function updateConnectionStatus(isConnected) {
 }
 
 /**
+ * Update historical data table
+ */
+function updateHistoryTable(historyData) {
+  historyTableBody.innerHTML = "";
+
+  if (historyData.length === 0) {
+    historyTableBody.innerHTML =
+      '<tr><td colspan="4" class="no-data-cell">No historical data available</td></tr>';
+    return;
+  }
+
+  // Reverse to show newest first
+  const reversedData = [...historyData].reverse();
+
+  reversedData.forEach((entry, index) => {
+    const row = document.createElement("tr");
+    row.className = "history-row";
+
+    const timestamp = new Date(entry.timestamp);
+    const formattedTime = timestamp.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+    // Color coding for SOC
+    let socClass = "normal";
+    if (entry.soc <= 20) socClass = "critical";
+    else if (entry.soc <= 50) socClass = "warning";
+    else socClass = "good";
+
+    // Color coding for SOH
+    let sohClass = "normal";
+    if (entry.soh <= 60) sohClass = "critical";
+    else if (entry.soh <= 75) sohClass = "warning";
+    else sohClass = "good";
+
+    row.innerHTML = `
+      <td class="row-number">${index + 1}</td>
+      <td class="timestamp-cell">${formattedTime}</td>
+      <td class="value-cell ${socClass}">${entry.soc.toFixed(1)}%</td>
+      <td class="value-cell ${sohClass}">${entry.soh.toFixed(1)}%</td>
+    `;
+
+    historyTableBody.appendChild(row);
+  });
+
+  console.log("📊 History table updated with", reversedData.length, "entries");
+}
+
+/**
  * Check for warning conditions
  */
 function checkWarnings(data) {
@@ -254,7 +339,7 @@ function checkWarnings(data) {
     });
   }
 
-  // Voltage warnings
+  // Voltage warnings (3.7V Li-ion specific)
   if (data.voltage <= THRESHOLDS.voltage.critical_low) {
     const warning = {
       level: "critical",
@@ -285,7 +370,7 @@ function checkWarnings(data) {
     warnings.push({
       level: "warning",
       icon: "⚡",
-      message: `High Voltage: ${data.voltage.toFixed(2)}V - Nearly full`,
+      message: `High Voltage: ${data.voltage.toFixed(2)}V - Fully charged`,
     });
   }
 
@@ -344,7 +429,7 @@ function checkWarnings(data) {
   }
 
   // Range warnings
-  if (data.estimatedRange <= 10 && data.chargingStatus === 0) {
+  if (data.estimatedRange <= 2 && data.chargingStatus === 0) {
     const warning = {
       level: "critical",
       icon: "🛑",
@@ -352,7 +437,7 @@ function checkWarnings(data) {
     };
     warnings.push(warning);
     criticalWarnings.push(warning.message);
-  } else if (data.estimatedRange <= 20 && data.chargingStatus === 0) {
+  } else if (data.estimatedRange <= 5 && data.chargingStatus === 0) {
     warnings.push({
       level: "warning",
       icon: "🔍",
@@ -420,38 +505,6 @@ function displayCriticalAlert(criticalWarnings) {
 }
 
 /**
- * Send motor mode command to ThingSpeak
- */
-async function sendMotorMode(mode) {
-  try {
-    motorOnBtn.disabled = true;
-    motorOffBtn.disabled = true;
-
-    const response = await fetch("/api/mode", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ mode }),
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      showToast(`✅ ${result.message}`, "success");
-    } else {
-      showToast(`❌ ${result.message}`, "error");
-    }
-  } catch (error) {
-    console.error("Error sending motor mode:", error);
-    showToast("❌ Failed to send motor command", "error");
-  } finally {
-    motorOnBtn.disabled = false;
-    motorOffBtn.disabled = false;
-  }
-}
-
-/**
  * Show toast notification
  */
 function showToast(message, type = "info") {
@@ -490,13 +543,22 @@ function startAutoRefresh() {
     clearInterval(refreshTimer);
   }
 
+  // Fetch data immediately
   fetchBatteryData();
-  refreshTimer = setInterval(fetchBatteryData, REFRESH_INTERVAL);
-}
+  fetchHistoricalData();
 
-// Event Listeners
-motorOnBtn.addEventListener("click", () => sendMotorMode(0));
-motorOffBtn.addEventListener("click", () => sendMotorMode(1));
+  // Set up interval for battery data
+  refreshTimer = setInterval(() => {
+    fetchBatteryData();
+    fetchHistoricalData();
+  }, REFRESH_INTERVAL);
+
+  console.log(
+    "🔄 Auto-refresh started: Every",
+    REFRESH_INTERVAL / 1000,
+    "seconds"
+  );
+}
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", () => {
