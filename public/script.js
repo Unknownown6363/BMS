@@ -29,7 +29,7 @@ const sohBar = document.getElementById("sohBar");
 const rangeBar = document.getElementById("rangeBar");
 
 // Auto-refresh interval (15 seconds)
-const REFRESH_INTERVAL = 15000;
+const REFRESH_INTERVAL = 5000;
 let refreshTimer = null;
 
 // Warning thresholds for 3.7V Li-ion battery (easily customizable)
