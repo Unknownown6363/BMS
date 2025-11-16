@@ -43,7 +43,7 @@ const THRESHOLDS = {
     critical_low: 3.0, // V - Below this damages Li-ion
     warning_low: 3.3, // V - Low voltage warning
     critical_high: 4.3, // V - Overcharge danger
-    warning_high: 4.2, // V - Fully charged
+    warning_high: 4.0, // V - Fully charged
   },
   soc: {
     critical: 10, // %
@@ -54,7 +54,7 @@ const THRESHOLDS = {
     warning: 75, // %
   },
   current: {
-    warning_high: 100, // mA
+    warning_high: 600, // mA
   },
 };
 
